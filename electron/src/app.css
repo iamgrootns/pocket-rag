@@ -1,0 +1,136 @@
+/* Pocket RAG UI - light single-file styles. */
+
+:root {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --ink: #1d2129;
+  --muted: #707785;
+  --line: #dfe3e8;
+  --accent: #2f5fd0;
+  --accent-soft: #e8effc;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 18px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--accent); color: #fff;
+  display: grid; place-items: center; font-weight: 700;
+}
+.title { font-weight: 700; font-size: 17px; }
+.subtitle { color: var(--muted); font-size: 12px; }
+
+.statusbar {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  padding: 6px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.layout { flex: 1; display: flex; min-height: 0; }
+
+.library {
+  width: 260px;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 14px;
+  overflow-y: auto;
+}
+.library h2 { font-size: 13px; margin: 0 0 10px; text-transform: uppercase; color: var(--muted); }
+.doc-list { list-style: none; margin: 0; padding: 0; }
+.doc-list li {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.doc-list .empty { border: none; color: var(--muted); justify-content: center; }
+.doc-list .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-list .status { font-size: 11px; color: var(--muted); }
+.doc-list .status.ok { color: #1a7f37; }
+.doc-list .del {
+  border: none; background: none; color: var(--muted); cursor: pointer;
+  font-size: 14px;
+}
+.doc-list .del:hover { color: #d33; }
+
+.chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.chat-log { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+
+.msg {
+  max-width: 72%;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+.assistant-msg { background: var(--panel); border: 1px solid var(--line); align-self: flex-start; }
+.user-msg { background: var(--accent); color: #fff; align-self: flex-end; }
+.typing { color: var(--muted); font-style: italic; }
+
+.askbar {
+  display: flex; gap: 8px;
+  padding: 12px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+.askbar input {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.askbar input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+
+.btn {
+  border: none; border-radius: 8px; cursor: pointer;
+  padding: 10px 16px; font-size: 14px;
+}
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:disabled { background: #9db4e8; cursor: wait; }
+
+.sources-panel {
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 10px 14px;
+}
+.sources-panel.hidden { display: none; }
+.sources-panel h3 { margin: 4px 0 8px; font-size: 12px; color: var(--muted); text-transform: uppercase; }
+.source-item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.source-item .head { display: flex; justify-content: space-between; font-weight: 600; }
+.source-item .snippet { color: var(--muted); margin-top: 4px; }

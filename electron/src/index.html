@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; connect-src 'self' http://127.0.0.1:8765 http://localhost:8765; style-src 'self' 'unsafe-inline';" />
+  <title>Pocket RAG</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">PR</span>
+      <span class="title">Pocket RAG</span>
+      <span class="subtitle">local &middot; grounded &middot; cited</span>
+    </div>
+    <button id="btn-add-docs" class="btn primary">+ Add documents</button>
+  </header>
+
+  <div class="statusbar" id="statusbar">Backend starting&hellip;</div>
+
+  <main class="layout">
+    <!-- left: document library -->
+    <aside class="library">
+      <h2>Library</h2>
+      <ul id="doc-list" class="doc-list"><li class="empty">No documents yet</li></ul>
+    </aside>
+
+    <!-- right: chat -->
+    <section class="chat">
+      <div id="chat-log" class="chat-log">
+        <div class="assistant-msg">Ask anything about your documents. Answers come only from the sources on the left, with page citations.</div>
+      </div>
+
+      <form id="ask-form" class="askbar">
+        <input id="question-input" type="text" placeholder="Ask your documents&hellip;" autocomplete="off" />
+        <button type="submit" class="btn primary" id="btn-ask">Ask</button>
+      </form>
+
+      <div id="sources-panel" class="sources-panel hidden">
+        <h3>Sources used</h3>
+        <div id="sources-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
