@@ -1,0 +1,40 @@
+[project]
+name = "pocket-rag-backend"
+version = "0.1.0"
+description = "Local grounded RAG backend - hybrid retrieval, reranking, cited answers"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn==0.34.0",
+    "python-multipart==0.0.20",
+    "pypdf==5.1.0",
+    "python-docx==1.1.2",
+    "sentence-transformers==3.3.1",
+    "torch>=2.6",
+    "sqlite-vec==0.1.6",
+    "llama-cpp-python>=0.3.5",
+    "numpy<3",
+    "huggingface-hub>=0.27",
+]
+
+[tool.uv]
+# application project (no packaging), managed python only
+package = false
+python-preference = "only-managed"
+
+# CUDA 12.4 wheels - matches driver 580 on this machine
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+# prebuilt llama.cpp CUDA wheels (no local C++ build needed)
+[[tool.uv.index]]
+name = "llama-cpp-python-cu124"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu124" }
+llama-cpp-python = { index = "llama-cpp-python-cu124" }

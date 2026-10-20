@@ -28,11 +28,13 @@ Offline? Put the GGUF into `backend/Models/` yourself and it is used as is.
 
 ```bash
 cd backend
-python -m venv venv
-# Windows: venv\Scripts\activate   |   Linux: source venv/bin/activate
-pip install -r requirements.txt
-python main.py           # FastAPI at 127.0.0.1:8765
+uv sync                # creates .venv with Python 3.10 + all deps (CUDA wheels)
+uv run python main.py  # FastAPI at 127.0.0.1:8765
 ```
+
+`uv sync` does everything: pinned Python 3.10 (via `.python-version`), a virtual
+env in `backend/.venv`, and the CUDA builds of torch + llama-cpp-python from
+prebuilt wheels (no local C++ compile).
 
 ### 3. Frontend (second terminal)
 
@@ -43,6 +45,16 @@ npm start
 ```
 
 The Electron app starts with the window; the backend must be running.
+
+## Everyday commands
+
+```bash
+cd backend
+uv sync                 # re-sync deps after editing pyproject.toml
+uv run python main.py   # start the backend
+uv add <package>        # add a dependency
+uv run python -c "import torch; print(torch.cuda.is_available())"   # check GPU
+```
 
 ## Layout
 
