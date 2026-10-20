@@ -32,11 +32,13 @@ RERANKER_MODEL_NAME = "BAAI/bge-reranker-base"
 RERANKER_THRESHOLD = 0.35
 
 # --- LLM (GGUF, Q4, runs in ~2GB VRAM) ---
-# Download Qwen2.5-3B-Instruct Q4_K_M GGUF into backend/Models/
-# and rename/set the file name here.
+# Auto-downloaded from Hugging Face on first run (like DFAPI models).
+# Manual option: drop the .gguf into backend/Models/ and it is used as is.
+LLM_REPO_ID = "Qwen/Qwen2.5-3B-Instruct-GGUF"
+LLM_FILE_NAME = "qwen2.5-3b-instruct-q4_k_m.gguf"
 LLM_MODEL_PATH = os.environ.get(
     "RAG_LLM_MODEL",
-    os.path.join(MODELS_DIR, "qwen2.5-3b-instruct-q4_k_m.gguf"),
+    os.path.join(MODELS_DIR, LLM_FILE_NAME),
 )
 # How many top snippets are shown to the LLM
 LLM_MAX_SNIPPETS = 8

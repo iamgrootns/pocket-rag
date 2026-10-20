@@ -6,7 +6,15 @@ Only this file knows about llama.cpp - swap models without touching Manager.
 
 import os
 
-from config import LLM_MAX_SNIPPETS, LLM_MAX_TOKENS, LLM_MODEL_PATH, LLM_TEMPERATURE
+from config import (
+    LLM_FILE_NAME,
+    LLM_MAX_SNIPPETS,
+    LLM_MAX_TOKENS,
+    LLM_MODEL_PATH,
+    LLM_REPO_ID,
+    LLM_TEMPERATURE,
+    MODELS_DIR,
+)
 from loggerutil import logger_util
 
 
@@ -17,9 +25,9 @@ class LLMWrapper:
         self.logger = logger_util("llm")
         self.model = None
 
-        if not os.path.isfile(LLM_MODEL_PATH):
-            self.logger.error(f"LLM file not found: {LLM_MODEL_PATH}")
-            self.logger.error("Put your Qwen2.5-3B Q4 GGUF in backend/Models/ (config.py) and restart.")
+        # 1) make sure the GGUF file exists (download it if not)
+        model_file = self._ensure_model_file()
+        if model_file is None:
             return
 
         try:
@@ -29,7 +37,7 @@ class LLMWrapper:
             if gpu_layers > 0:
                 try:
                     self.model = Llama(
-                        model_path=LLM_MODEL_PATH,
+                        model_path=model_file,
                         n_ctx=4096,
                         n_batch=256,
                         n_gpu_layers=gpu_layers,
@@ -42,7 +50,7 @@ class LLMWrapper:
 
             if self.model is None:
                 self.model = Llama(
-                    model_path=LLM_MODEL_PATH,
+                    model_path=model_file,
                     n_ctx=4096,
                     n_batch=256,
                     n_gpu_layers=0,
@@ -51,6 +59,39 @@ class LLMWrapper:
                 self.logger.info("LLM loaded on CPU")
         except Exception as e:
             self.logger.error(f"LLM failed to load: {e}")
+
+    def _ensure_model_file(self) -> str | None:
+        """Return the GGUF path. Downloads it from Hugging Face when missing.
+
+        Same behaviour as the DFAPI models: nothing to set up by hand.
+        """
+        # already there (user placed it manually or we downloaded it before)
+        if os.path.isfile(LLM_MODEL_PATH):
+            return LLM_MODEL_PATH
+
+        # a file with the right name somewhere in Models/ is fine too
+        manual = os.path.join(MODELS_DIR, LLM_FILE_NAME)
+        if os.path.isfile(manual):
+            return manual
+
+        self.logger.info(f"LLM file missing - downloading {LLM_REPO_ID}/{LLM_FILE_NAME}")
+        try:
+            from huggingface_hub import hf_hub_download
+
+            downloaded = hf_hub_download(
+                repo_id=LLM_REPO_ID,
+                filename=LLM_FILE_NAME,
+                local_dir=MODELS_DIR,  # kept inside backend/Models/
+            )
+            self.logger.info(f"LLM downloaded to {downloaded}")
+            return downloaded
+        except Exception as e:
+            self.logger.error(f"LLM download failed: {e}")
+            self.logger.error(
+                "Offline? Download the GGUF manually into backend/Models/ "
+                f"({LLM_FILE_NAME}) and restart."
+            )
+            return None
 
     def generate_grounded_answer(self, question: str, snippets: list[dict]) -> str:
         """snippets = [{"number","content","source"}...] used strictly as context."""

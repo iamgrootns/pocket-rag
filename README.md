@@ -17,9 +17,12 @@ Everything runs on your machine - designed and sized for a **4GB GPU laptop**.
 
 ### 1. Backend models
 
-- Embedder + reranker download automatically from Hugging Face on first run
-- The LLM does not auto-download. Get `qwen2.5-3b-instruct-q4_k_m.gguf`
-  and drop it in `backend/Models/` (name configurable in `backend/config.py`)
+All models download automatically on first run (same behaviour as the deepfake API models):
+
+- Embedder `BAAI/bge-small-en-v1.5` + reranker `BAAI/bge-reranker-base` - Hugging Face cache
+- LLM `Qwen/Qwen2.5-3B-Instruct-GGUF` (`qwen2.5-3b-instruct-q4_k_m.gguf`) - saved in `backend/Models/`
+
+Offline? Put the GGUF into `backend/Models/` yourself and it is used as is.
 
 ### 2. Backend
 
