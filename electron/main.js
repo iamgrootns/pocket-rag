@@ -3,8 +3,9 @@
  * One concern: window + backend lifecycle only - UI logic lives in src/app.js.
  */
 
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const { spawn } = require("child_process");
+const fs = require("fs");
 const path = require("path");
 
 const BACKEND_URL = "http://127.0.0.1:8765";
@@ -75,7 +76,6 @@ ipcMain.handle("get-backend-url", () => BACKEND_URL);
 
 // user picks files; renderer cannot see the filesystem (contextIsolation)
 ipcMain.handle("pick-files", async () => {
-  const { dialog } = require("electron");
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ["openFile", "multiSelections"],
     filters: [
@@ -87,7 +87,6 @@ ipcMain.handle("pick-files", async () => {
 
 // read one file for upload (renderer has no fs access - contextIsolation)
 ipcMain.handle("read-file-bytes", async (_event, filePath) => {
-  const fs = require("fs");
   return fs.readFileSync(filePath).buffer;
 });
 

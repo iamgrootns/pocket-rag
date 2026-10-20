@@ -8,12 +8,14 @@ import asyncio
 import uuid
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import JSONResponse
 
 from backgroundprocess import BackgroundProcessor
 from chunking_util import ChunkingUtils
 from commonfunc import CommonFunctions
+from config import BACKEND_HOST, BACKEND_PORT
 from dbops import RagDBOperations
 from embedding_wrapper import EmbeddingWrapper
 from ingestion_util import IngestionUtils
@@ -145,8 +147,4 @@ async def delete_document(doc_guid: str):
 
 
 if __name__ == "__main__":
-    import uvicorn
-
-    from config import BACKEND_HOST, BACKEND_PORT
-
     uvicorn.run(app, host=BACKEND_HOST, port=BACKEND_PORT)

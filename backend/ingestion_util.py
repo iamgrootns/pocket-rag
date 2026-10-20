@@ -9,6 +9,17 @@ import os
 
 from loggerutil import logger_util
 
+# document readers - optional, so the backend still boots without them
+try:
+    from pypdf import PdfReader
+except ImportError:  # pragma: no cover
+    PdfReader = None
+
+try:
+    import docx
+except ImportError:  # pragma: no cover
+    docx = None
+
 
 class IngestionUtils:
     """Extracts page-aligned text from PDF/DOCX/TXT/MD."""
@@ -32,7 +43,9 @@ class IngestionUtils:
 
     def _extract_pdf(self, file_bytes: bytes) -> list[dict]:
         try:
-            from pypdf import PdfReader
+            if PdfReader is None:
+                self.logger.error("pypdf is not installed - cannot read PDF files")
+                return []
 
             reader = PdfReader(io.BytesIO(file_bytes))
             pages = []
@@ -47,10 +60,12 @@ class IngestionUtils:
 
     def _extract_docx(self, file_bytes: bytes) -> list[dict]:
         try:
-            import docx
+            if docx is None:
+                self.logger.error("python-docx is not installed - cannot read DOCX files")
+                return []
 
-            doc = docx.Document(io.BytesIO(file_bytes))
-            text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+            document = docx.Document(io.BytesIO(file_bytes))
+            text = "\n".join(p.text for p in document.paragraphs if p.text.strip())
             if text.strip():
                 return [{"page_num": 1, "text": text}]
             return []

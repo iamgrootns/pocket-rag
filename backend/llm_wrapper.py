@@ -17,6 +17,17 @@ from config import (
 )
 from loggerutil import logger_util
 
+# heavy optional imports live at the top, wrapped so the app still boots without them
+try:
+    from llama_cpp import Llama
+except ImportError:  # pragma: no cover - depends on local build
+    Llama = None
+
+try:
+    from huggingface_hub import hf_hub_download
+except ImportError:  # pragma: no cover
+    hf_hub_download = None
+
 
 class LLMWrapper:
     """Local GGUF generation through llama-cpp-python."""
@@ -31,7 +42,9 @@ class LLMWrapper:
             return
 
         try:
-            from llama_cpp import Llama
+            if Llama is None:
+                self.logger.error("llama-cpp-python is not installed (pip install llama-cpp-python)")
+                return
 
             gpu_layers = int(os.environ.get("RAG_GPU_LAYERS", "36"))
             if gpu_layers > 0:
@@ -76,7 +89,8 @@ class LLMWrapper:
 
         self.logger.info(f"LLM file missing - downloading {LLM_REPO_ID}/{LLM_FILE_NAME}")
         try:
-            from huggingface_hub import hf_hub_download
+            if hf_hub_download is None:
+                raise RuntimeError("huggingface-hub is not installed")
 
             downloaded = hf_hub_download(
                 repo_id=LLM_REPO_ID,

@@ -6,10 +6,20 @@ One file, one concern: only how SQLite connections are created.
 import sqlite3
 
 from config import DB_PATH, EMBEDDING_DIM
+from loggerutil import logger_util
+
+# vector extension - optional, app still works (vector search degrades) without it
+try:
+    import sqlite_vec
+except ImportError:  # pragma: no cover
+    sqlite_vec = None
 
 
 class dbconnection:
     """Creates tuned sqlite connections and loads the vector extension."""
+
+    def __init__(self):
+        self.logger = logger_util("dbconnection")
 
     def _connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(DB_PATH)
@@ -19,7 +29,9 @@ class dbconnection:
         conn.execute("PRAGMA foreign_keys=ON")
         try:
             # sqlite-vec = vector search inside this same db file
-            import sqlite_vec
+            if sqlite_vec is None:
+                self.logger.error("sqlite-vec is not installed - vector search disabled")
+                return conn
 
             conn.enable_load_extension(True)
             sqlite_vec.load(conn)
